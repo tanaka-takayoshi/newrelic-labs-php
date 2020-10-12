@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: web
+    ports:
+      - "8080:80"
+    depends_on:
+      - php
+  php:
+    build:
+      context: php/ 
+      args:
+        - NEW_RELIC_AGENT_VERSION=9.11.0.267
+        - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+        - NEW_RELIC_APPNAME=NewRelic Labs - Laravel App
+        - NEW_RELIC_DAEMON_ADDRESS=newrelic-apm-daemon:31339
+    restart: always
+    volumes:
+      - ./php/blog:/code
+    depends_on:
+      - newrelic-apm-daemon
+      
+        
+  newrelic-apm-daemon:
+    image: newrelic/php-daemon:9.11.0
